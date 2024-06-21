@@ -3,6 +3,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+/* FIXME: these defines are used temporarily, we need to move them to global space */
 #define SHELLMGRUARTNUM 0
 #define SHELLBUFFERLENGTH 1024
 static uint8_t shell_buffer[SHELLBUFFERLENGTH];
@@ -12,7 +14,7 @@ nrfx_uarte_t instance = NRFX_UARTE_INSTANCE(SHELLMGRUARTNUM);
 
 void event_handler(nrfx_uarte_event_t const *p_event, void *p_context)
 {
-    if(p_event->type == NRFX_UARTE_EVT_RX_DONE){
+    if(p_event->type == NRFX_UARTE_EVT_RX_DONE) {
         if(*(char *)p_event->data.rxtx.p_data != '\r')
             shellMgr->outputString(p_event->data.rxtx.p_data);
         else {
@@ -25,13 +27,13 @@ void event_handler(nrfx_uarte_event_t const *p_event, void *p_context)
 static void outputString(char *string)
 {
     size_t length = strlen(string);
-    if(length < SHELLBUFFERLENGTH){
+    if(length < SHELLBUFFERLENGTH) {
         memcpy(shell_buffer, string, length);
         nrfx_err_t err = nrfx_uarte_tx(&instance, shell_buffer, length);
         return;
     }
     size_t left = length % SHELLBUFFERLENGTH + 1;
-    for(int i = 0; i < length / SHELLBUFFERLENGTH; i++){
+    for(int i = 0; i < length / SHELLBUFFERLENGTH; i++) {
         memcpy(shell_buffer, string, SHELLBUFFERLENGTH);
         nrfx_err_t err = nrfx_uarte_tx(&instance, shell_buffer, SHELLBUFFERLENGTH);
         string += SHELLBUFFERLENGTH;
