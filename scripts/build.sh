@@ -1,5 +1,5 @@
 #!/bin/env bash
-if [ $# -ne 1 ]; then
+if [ $# -lt 1 ]; then
     echo "Usage:"
     echo -e "\t$0 BOARD=nrf52840dk"
 fi
@@ -13,12 +13,14 @@ BOARD_DIR=$(find "${SCRIPT_DIR}/../boards/" -type d -name "${BOARD}" -print -qui
 
 OUTPUT_DIR="${MOCROOT_DIR}/out/${BOARD}"
 
+
+CPU_MAX=$(cat /proc/cpuinfo | grep "processor" | wc -l)
 cd "${MOCROOT_DIR}"
 source "${BOARD_DIR}/deps/env.sh"
-#FIXME: haven't done clean function
-#make "BOARD=${BOARD} clean"
 
-make "BOARD=${BOARD}"
+make clean
+
+make "BOARD=${BOARD}" "-j${CPU_MAX}"
 
 
 
