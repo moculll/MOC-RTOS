@@ -9,10 +9,10 @@
 #define SHELLBUFFERLENGTH 1024
 static uint8_t shell_buffer[SHELLBUFFERLENGTH];
 
-nrfx_uarte_t instance = NRFX_UARTE_INSTANCE(SHELLMGRUARTNUM);
+static nrfx_uarte_t instance = NRFX_UARTE_INSTANCE(SHELLMGRUARTNUM);
 
 
-void event_handler(nrfx_uarte_event_t const *p_event, void *p_context)
+static void event_handler(nrfx_uarte_event_t const *p_event, void *p_context)
 {
     if(p_event->type == NRFX_UARTE_EVT_RX_DONE) {
         if(*(char *)p_event->data.rxtx.p_data != '\r')

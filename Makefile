@@ -7,7 +7,3 @@ BOARD_DIR := $(shell find "${MOC_ROOT}/boards" -type d -name "${BOARD}" -print -
 
 include $(MOC_ROOT)/boards/$(BOARD).mk
 
-
-
-
-#include $(MOC_ROOT)/boards/$(BOARD).mk

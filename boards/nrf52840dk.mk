@@ -34,7 +34,7 @@ SRCS_ASM := $(wildcard $(MOC_ROOT)/boards/arm/nrf52840dk/reset_handler/*.S)
 #FIXME: this is not the correct way to include files in nrfx
 CFLAGS += -I$(VENDOR_LIB) -I$(VENDOR_LIB)/drivers -I$(VENDOR_LIB)/drivers/include 
 CFLAGS += -I$(VENDOR_LIB)/drivers/src -I$(VENDOR_LIB)/drivers/src/prs -I$(VENDOR_LIB)/hal -I$(VENDOR_LIB)/soc
-CFLAGS += -I$(BOARD_DIR) -I$(BOARD_DIR)/reset_handler
+CFLAGS += -I$(BOARD_DIR) -I$(BOARD_DIR)/vendor -I$(BOARD_DIR)/reset_handler
 
 
 CFLAGS += -I$(MOC_ROOT)/lib/cmsis/Core/Include -I$(MOC_ROOT)/lib/shellMgr -I$(MOC_ROOT)/boards/arm/nrf52840dk/osImpl
@@ -51,7 +51,6 @@ LDFLAGS := -T $(LDSCRIPT) -Wl,-Map,$(BOARD).map --specs=nano.specs -Wl,--gc-sect
 OBJS := $(SRCS:.c=.o)
 OBJS += $(SRCS_ASM:.S=.o)
 
-BOARD := main
 all: $(BOARD).elf
 
 
