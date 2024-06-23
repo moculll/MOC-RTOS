@@ -52,3 +52,41 @@ e.g.
 2. fix build issue
 3. add more makefiles to board nrf52840dk
 ```
+
+- #### FIXME
+```
+current project contains multiple of "FIXME" in some files
+these "FIXME" need to be fixed, we can simply search them by coding tools
+
+after fixing, we recommend to commit by template as below:
+[2024-06-22][mocul](FIXME): 
+1. fix thread pid function
+
+```
+
+- #### BackupCommits
+
+```
+assume that we have two branches "main" and "working_on_thread_porting"
+if we're in branch "working_on_thread_porting", we can push a backup commit as below:
+
+[date][author](branch)(type): changes
+```
+e.g.
+```
+[2024-06-22][mocul](working_on_thread_porting)(BACKUP):
+1. working on thread porting, backup
+```
+
+```
+and we need to remember to add all changes in the future commits
+```
+
+e.g.
+
+```
+[2024-06-22][mocul](optimize/fix/addFunc):
+1. added thread mutex
+2. added thread msg function
+
+```
