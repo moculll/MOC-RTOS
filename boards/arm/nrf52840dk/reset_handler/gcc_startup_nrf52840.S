@@ -29,7 +29,7 @@ NOTICE: This file has been modified by Nordic Semiconductor ASA.
 #define __STARTUP_CONFIG_STACK_ALIGNEMENT 3
 #endif
 #endif
-
+    .extern PendSV_Handler
     .section .stack
 #if defined(__STARTUP_CONFIG)
     .align __STARTUP_CONFIG_STACK_ALIGNEMENT
@@ -338,11 +338,7 @@ DebugMon_Handler:
     .size   DebugMon_Handler, . - DebugMon_Handler
 
 
-    .weak   PendSV_Handler
-    .type   PendSV_Handler, %function
-PendSV_Handler:
-    b       .
-    .size   PendSV_Handler, . - PendSV_Handler
+
 
 
     .weak   SysTick_Handler

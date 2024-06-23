@@ -21,24 +21,42 @@ SRCS += $(wildcard $(VENDOR_LIB)/drivers/soc/*.c)
 SRCS += $(wildcard $(VENDOR_LIB)/drivers/src/prs/*.c)
 SRCS += $(wildcard $(BOARD_DIR)/reset_handler/*.c)
 
-
+# mocos shell namager src
 SRCS += $(wildcard $(MOC_ROOT)/lib/shellMgr/*.c)
 
+# mocos system core src
+SRCS += $(wildcard $(MOC_ROOT)/core/*.c)
+
+# nrf52840dk system implementation src
 SRCS += $(wildcard $(BOARD_DIR)/osImpl/*.c)
 
+# example src
 SRCS += $(MOC_ROOT)/examples/hello_world/src/main.c
 
 SRCS_ASM := $(wildcard $(MOC_ROOT)/boards/arm/nrf52840dk/reset_handler/*.S)
 
 
-#FIXME: this is not the correct way to include files in nrfx
+# FIXME: this is not the correct way to include files in nrfx
 CFLAGS += -I$(VENDOR_LIB) -I$(VENDOR_LIB)/drivers -I$(VENDOR_LIB)/drivers/include 
 CFLAGS += -I$(VENDOR_LIB)/drivers/src -I$(VENDOR_LIB)/drivers/src/prs -I$(VENDOR_LIB)/hal -I$(VENDOR_LIB)/soc
 CFLAGS += -I$(BOARD_DIR) -I$(BOARD_DIR)/vendor -I$(BOARD_DIR)/reset_handler
 
+# CMSIS library include
+CFLAGS += -I$(MOC_ROOT)/lib/cmsis/Core/Include
 
-CFLAGS += -I$(MOC_ROOT)/lib/cmsis/Core/Include -I$(MOC_ROOT)/lib/shellMgr -I$(MOC_ROOT)/boards/arm/nrf52840dk/osImpl
+# mocos system core include
+CFLAGS += -I$(MOC_ROOT)/core/include
 
+# mocos shell manager include
+CFLAGS += -I$(MOC_ROOT)/lib/shellMgr 
+
+# nrf52840dk system implementation include
+CFLAGS += -I$(BOARD_DIR)/osImpl
+
+# zephyr dlist
+CFLAGS += -I$(MOC_ROOT)/lib/dlist
+
+# example include
 CFLAGS += -I$(MOC_ROOT)/examples/hello_world/src
 
 LDSCRIPT := $(BOARD_DIR)/ld/nrf_common.ld

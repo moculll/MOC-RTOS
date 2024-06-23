@@ -7,6 +7,8 @@
 #include "system_nrf52.h"
 #include "system_nrf52_approtect.h"
 #include "shellMgr.h"
+#include <nrfx_systick.h>
+#include "thread.h"
 #define __SYSTEM_CLOCK_64M      (64000000UL)
 
 
@@ -115,6 +117,16 @@ void cortexm_init(void)
 
     cortexm_init_isr_priorities();
     cortexm_init_misc();
+}
+
+static void systickInit()
+{
+    nrf_systick_load_set(NRF_SYSTICK_VAL_MASK);
+    nrf_systick_csr_set(
+        NRF_SYSTICK_CSR_CLKSOURCE_CPU |
+        NRF_SYSTICK_CSR_TICKINT_DISABLE |
+        NRF_SYSTICK_CSR_ENABLE);
+
 }
 
 extern void main();
@@ -347,9 +359,11 @@ void SystemInit(void)
     #endif
 
     SystemCoreClockUpdate();
-
+    nrfx_systick_init();
+    /* FIXME: the system init function shouldn't be inited seperatly there */
     shellMgr->init();
-
+    nrfx_systick_delay_ms(200);
+    mThreadInit();
 }
 
 

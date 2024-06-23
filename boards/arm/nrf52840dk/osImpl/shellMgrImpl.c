@@ -60,6 +60,6 @@ void shellMgrImplInit(void)
     };
     nrfx_uarte_init(&instance, &uart_cfg, event_handler);
     shellMgr->outputString = outputString;
-    shellMgr->outputString("Welcome to MOCOS!\r\n");
+    shellMgr->outputString("\r\nWelcome to MOCOS!\r\n");
 }
 
