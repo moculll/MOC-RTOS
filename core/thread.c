@@ -58,18 +58,33 @@ mThreadErrorType_t mThreadCreate(char *stackStart, int stackSize, int8_t priorit
     /* allocate our thread control block at the top of our stackspace. Cast to
      * (uintptr_t) intermediately to silence -Wcast-align. (We manually made
      * sure alignment is correct above.) */
-    mThread_t *thread = (mThread_t *)(uintptr_t)(stackStart + stackSize);
+    mThread_t *newThread = (mThread_t *)(uintptr_t)(stackStart + stackSize);
 
     unsigned state = mDisableIrqImpl();
     
-    thread->stackStart = stackStart;
-    thread->context = context;
-    thread->pid++;
-    thread->status = mThreadStatus_PRESTART;
-    thread->priority = priority;
-    thread->sp = mThreadStackImplInit(callback, context, stackStart, stackSize);
+    newThread->stackStart = stackStart;
+    newThread->context = context;
+    newThread->pid++;
+    newThread->status = mThreadStatus_PRESTART;
+    newThread->priority = priority;
+    newThread->sp = mThreadStackImplInit(callback, context, stackStart, stackSize);
 
-    MOC_GET_THREAD_BY_PRIO_CPU0(priority) = thread;
+
+    mThread_t *threadList = MOC_GET_THREAD_BY_PRIO_CPU0(priority);
+
+    if(threadList == NULL){
+        sys_dlist_init(&newThread->threadNode);
+        MOC_GET_THREAD_BY_PRIO_CPU0(priority) = newThread;
+        goto restore_irq;
+    }
+        
+
+    sys_dnode_init(&newThread->threadNode);
+    sys_dlist_append(&threadList->threadNode, &newThread->threadNode);
+    
+
+
+restore_irq:
 
     mRestoreIrq(state);
 
@@ -95,6 +110,7 @@ mThread_t *mThreadSchedule(void)
         
         if(threadTmp == NULL)
             continue;
+        
         return threadTmp;
     }
     return NULL;

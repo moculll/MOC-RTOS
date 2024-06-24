@@ -65,6 +65,7 @@ typedef struct {
     char *sp;                   /* stack pointer of the thread */
 
     /* FIXME: current system supports only doubled-list sheduling */
+    /* the first array member contains type dlist, the rest are dnode */
     union {
 		sys_dnode_t threadNode; /* zephyr dlist lib ( $(MOC_ROOT)/lib/dlist/dlist.h ) */
 	};
