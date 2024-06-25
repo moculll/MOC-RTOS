@@ -8,13 +8,32 @@
 
 char logbuffer[100];
 
+
+#define CONFIG_THREAD_DEBUG_ASSERT 1
+#if CONFIG_THREAD_DEBUG_ASSERT
+#define ThreadDebugAssert() \
+            do { \
+                mEnableIrqImpl(); \
+                while(1); \
+           } while(0)
+#else
+#define ThreadDebugAssert()
+#endif
 /* FIXME: the debug function is not complete because we haven't impl the shellMgr done */
 #define ThreadDebugLogout(format, ...) \
                 do { \
-                    snprintf(logbuffer, 100, format"\r\n", ##__VA_ARGS__); \
+                    snprintf(logbuffer, 100, "[%s]"format"\r\n", __func__, ##__VA_ARGS__); \
                     shellMgr->outputString(logbuffer); \
                     nrfx_systick_delay_ms(50); \
                 } while(0);
+
+
+void mThreadDebugInfoOutput(mThread_t *thread)
+{
+
+    ThreadDebugLogout("Thread pid: %d, priority: %d, status: %d", thread->pid, thread->priority, thread->status);
+
+}
 
 /* FIXME: thread init function should support init status */
 mThreadErrorType_t mThreadInit(void)
@@ -30,7 +49,10 @@ mThreadErrorType_t mThreadInit(void)
     return err;
 }
 
-
+/**
+ * @brief we don't manage the mThreadCurrent there, this function is just for thread create & dlist management
+ * 
+ */
 mThreadErrorType_t mThreadCreate(char *stackStart, int stackSize, int8_t priority, \
                                     mThreadCallback_t callback, void *context)
 {
@@ -59,29 +81,33 @@ mThreadErrorType_t mThreadCreate(char *stackStart, int stackSize, int8_t priorit
      * (uintptr_t) intermediately to silence -Wcast-align. (We manually made
      * sure alignment is correct above.) */
     mThread_t *newThread = (mThread_t *)(uintptr_t)(stackStart + stackSize);
-
+ 
     unsigned state = mDisableIrqImpl();
     
     newThread->stackStart = stackStart;
     newThread->context = context;
     newThread->pid++;
-    newThread->status = mThreadStatus_PRESTART;
+    /* FIXME: thread init status should be dummy, and there should be a function decide if the thread status change to prestart */
+    newThread->status = mThreadStatus_PRESTART_BIT;
     newThread->priority = priority;
     newThread->sp = mThreadStackImplInit(callback, context, stackStart, stackSize);
 
 
-    mThread_t *threadList = MOC_GET_THREAD_BY_PRIO_CPU0(priority);
 
-    if(threadList == NULL){
-        sys_dlist_init(&newThread->threadNode);
-        MOC_GET_THREAD_BY_PRIO_CPU0(priority) = newThread;
-        goto restore_irq;
-    }
-        
-
-    sys_dnode_init(&newThread->threadNode);
-    sys_dlist_append(&threadList->threadNode, &newThread->threadNode);
+    mThread_t *threadTmp = MOC_GET_THREAD_BY_PRIO_CPU0(priority);
     
+    sys_dnode_init(&newThread->threadNode);
+    if(threadTmp == NULL){
+        /* if current thread is the first of this priority, we set it as dlist */
+        sys_dlist_init(&newThread->threadList);
+        MOC_GET_THREAD_BY_PRIO_CPU0(priority) = newThread;
+    }
+    else {
+        /* if not, just insert it in the tail */
+        newThread->threadList = threadTmp->threadList;
+        
+    }
+    sys_dlist_append(&newThread->threadList, &newThread->threadNode);
 
 
 restore_irq:
@@ -100,19 +126,45 @@ void mThread_debug(void)
 
 }
 
+
+/**
+ * @brief 
+ *
+ */
 mThread_t *mThreadSchedule(void)
 {
     mThread_t *threadToBeSchedule = NULL;
 
     /* FIXME: current supports only one thread and I think that there should be a activated thread list to reduce time usage */
     for(int8_t threadIndex = 0; threadIndex < MOC_MAX_THREAD_PRIO; threadIndex++){
-        mThread_t *threadTmp = MOC_GET_THREAD_CPU0(threadIndex);
-        
-        if(threadTmp == NULL)
+        if(!MOC_GET_THREAD_CPU0(threadIndex))
             continue;
+        mThread_t *threadTmp = NULL;
+        mThread_t *threadForSwitch = NULL;
         
-        return threadTmp;
+        if(mThreadCurrent == NULL) {
+            threadTmp = MOC_GET_THREAD_CPU0(threadIndex);
+        }
+        else {
+            threadTmp = mThreadCurrent;
+        }
+        
+        sys_dnode_t *newNodeForSwitch = NULL;
+        sys_dnode_t *tempNodeSafe = NULL;
+        ThreadDebugLogout("ready to schedule node");
+        SYS_DLIST_FOR_EACH_NODE_SAFE(&threadTmp->threadList, newNodeForSwitch, tempNodeSafe) {
+            threadForSwitch = CONTAINER_OF(newNodeForSwitch, mThread_t, threadNode);
+            if(threadForSwitch->status & (mThreadStatus_ABORTING_BIT | mThreadStatus_PRESTART_BIT)){
+                ThreadDebugLogout("find node match");
+                mThreadDebugInfoOutput(threadForSwitch);
+                return mThreadCurrent = threadForSwitch;
+            }
+        }   
+
+
     }
+    ThreadDebugLogout("schedule None");
+
     return NULL;
 
     

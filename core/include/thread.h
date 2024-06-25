@@ -30,51 +30,49 @@ typedef enum {
     mThreadErrorType_ERROR_THREADSTACKOVERLAP,
 } mThreadErrorType_t;
 
-typedef enum {
-    /* not a real thread */
-    mThreadStatus_DUMMY,
 
-    /* thread is stopped */
-    mThreadStatus_STOPED,
+/* not a real thread */
+#define mThreadStatus_DUMMY_BIT (0 << 1)
 
-    /* thread not yet started  */
-    mThreadStatus_PRESTART,
+/* thread is stopped */
+#define mThreadStatus_STOPED_BIT  (1 << 1)
 
-    /* thread is running */
-    mThreadStatus_RUNNING,
+/* thread not yet started  */
+#define mThreadStatus_PRESTART_BIT (2 << 1)
 
-    /* thread is suspended */
-    mThreadStatus_SUSPENDED,
+/* thread is running */
+#define mThreadStatus_RUNNING_BIT (3 << 1)
 
-    /* thread is being aborted */
-    mThreadStatus_ABORTING,
+/* thread is suspended */
+#define mThreadStatus_SUSPENDED_BIT (4 << 1)
 
-    /* thread is waiting on other objects */
-    mThreadStatus_PENDING,
+/* thread is being aborted */
+#define mThreadStatus_ABORTING_BIT (5 << 1)
 
-    /* thread is sleeping */
-    mThreadStatus_SLEEPING,
+/* thread is waiting on other objects */
+#define mThreadStatus_PENDING_BIT (6 << 1)
 
-    /* thread status total number */
-    mThreadStatus_NUM,
+/* thread is sleeping */
+#define mThreadStatus_SLEEPING_BIT (7 << 1)
 
-} mThreadStatus_t;
+
 
 typedef struct {
     /* NOTICE: the position of sp shouldn't be changed because we use the address of mThread_t to locate sp */
     char *sp;                   /* stack pointer of the thread */
-
+    
+    sys_dnode_t threadNode;
     /* FIXME: current system supports only doubled-list sheduling */
     /* the first array member contains type dlist, the rest are dnode */
     union {
-		sys_dnode_t threadNode; /* zephyr dlist lib ( $(MOC_ROOT)/lib/dlist/dlist.h ) */
+		sys_dlist_t threadList; /* zephyr dlist lib ( $(MOC_ROOT)/lib/dlist/dlist.h ) */
 	};
 
     char *stackStart;           /* start address of the thread stack */
     mThreadPID_t pid;                /* pid of the thread */
 
     int8_t priority;            /* priority of the thread */
-    mThreadStatus_t status;     /* status of the thread */
+    uint8_t status;     /* status of the thread */
     
     void *context;              /* user context passed to thread */
 
@@ -83,7 +81,6 @@ typedef struct {
 
 typedef struct {
     mThread_t *thread[MOC_MAX_THREAD_PRIO];
-
 } mCPU_t;
 
 
@@ -105,6 +102,8 @@ static mThread_t *mThreadCurrent;
 } */
 
 #define MOC_PRIO_MAP_TO_ARRAY(priority) ((priority) + (MOC_MAX_THREAD_PRIO - 1) / 2)
+
+#define MOC_ARRAY_MAP_TO_PRIO(index) (index - (MOC_MAX_THREAD_PRIO - 1) / 2)
 
 #define MOC_GET_KERNEL() mKernel
 
