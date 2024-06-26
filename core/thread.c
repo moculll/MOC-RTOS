@@ -6,10 +6,10 @@
 #include "shellMgr.h"
 #include <nrfx_systick.h>
 
-char logbuffer[100];
+char logbuffer[500];
 
 
-#define CONFIG_THREAD_DEBUG_ASSERT 1
+#define CONFIG_THREAD_DEBUG_ASSERT 0
 #if CONFIG_THREAD_DEBUG_ASSERT
 #define ThreadDebugAssert() \
             do { \
@@ -19,14 +19,28 @@ char logbuffer[100];
 #else
 #define ThreadDebugAssert()
 #endif
+
+#define CONFIG_THREAD_DEBUG_LOG 1
+#if CONFIG_THREAD_DEBUG_LOG
 /* FIXME: the debug function is not complete because we haven't impl the shellMgr done */
 #define ThreadDebugLogout(format, ...) \
                 do { \
-                    snprintf(logbuffer, 100, "[%s]"format"\r\n", __func__, ##__VA_ARGS__); \
+                    nrfx_systick_delay_ms(100); \
+                    snprintf(logbuffer, 500, "[%s]"format"\r\n", __func__, ##__VA_ARGS__); \
                     shellMgr->outputString(logbuffer); \
-                    nrfx_systick_delay_ms(50); \
+                    nrfx_systick_delay_ms(10); \
                 } while(0);
+#else 
 
+#define ThreadDebugLogout(format, ...)
+
+#endif
+
+
+volatile mKernel_t mKernel;
+
+/* FIXME: current system supports only one cpu, current thread needs to be multiple */
+volatile mThread_t *mThreadCurrent;
 
 void mThreadDebugInfoOutput(mThread_t *thread)
 {
@@ -34,11 +48,16 @@ void mThreadDebugInfoOutput(mThread_t *thread)
     ThreadDebugLogout("Thread pid: %d, priority: %d, status: %d", thread->pid, thread->priority, thread->status);
 
 }
+void mThreadCurrentDebugInfoOutput(void)
+{
 
+    ThreadDebugLogout("Thread pid: %d, priority: %d, status: %d", mThreadCurrent->pid, mThreadCurrent->priority, mThreadCurrent->status);
+
+}
 /* FIXME: thread init function should support init status */
 mThreadErrorType_t mThreadInit(void)
 {
-    ThreadDebugLogout("into thread init");
+
     mThreadErrorType_t err = mThreadErrorType_ERROR_NONE;
     
     for(int threadIndex = 0; threadIndex < MOC_MAX_THREAD_PRIO; threadIndex++)
@@ -58,7 +77,7 @@ mThreadErrorType_t mThreadCreate(char *stackStart, int stackSize, int8_t priorit
 {
     
     MOC_THREAD_ASSERT(priority <= 32 && priority >= -32, mThreadErrorType_ERROR_THREADPRIOINVALID);
-    ThreadDebugLogout("into thread create");
+    /* ThreadDebugLogout("into thread create"); */
 
     mThreadErrorType_t err = mThreadErrorType_ERROR_NONE;
     /* align the stack on a 16/32bit boundary */
@@ -93,38 +112,31 @@ mThreadErrorType_t mThreadCreate(char *stackStart, int stackSize, int8_t priorit
     newThread->sp = mThreadStackImplInit(callback, context, stackStart, stackSize);
 
 
-
-    mThread_t *threadTmp = MOC_GET_THREAD_BY_PRIO_CPU0(priority);
     
     sys_dnode_init(&newThread->threadNode);
-    if(threadTmp == NULL){
+    if(MOC_GET_THREAD_BY_PRIO_CPU0(priority) == NULL){
         /* if current thread is the first of this priority, we set it as dlist */
         sys_dlist_init(&newThread->threadList);
         MOC_GET_THREAD_BY_PRIO_CPU0(priority) = newThread;
     }
-    else {
-        /* if not, just insert it in the tail */
-        newThread->threadList = threadTmp->threadList;
-        
+    else{
+        newThread->threadList = MOC_GET_THREAD_BY_PRIO_CPU0(priority)->threadList;
     }
-    sys_dlist_append(&newThread->threadList, &newThread->threadNode);
+    
+    sys_dlist_append(&MOC_GET_THREAD_BY_PRIO_CPU0(priority)->threadList, &newThread->threadNode);
+
 
 
 restore_irq:
 
     mRestoreIrq(state);
 
-    ThreadDebugLogout("ready to call pendsv");
     mThreadYieldHigher();
 
     return err;
 }
 
-void mThread_debug(void)
-{
-    ThreadDebugLogout("mThread_debug");
 
-}
 
 
 /**
@@ -137,33 +149,40 @@ mThread_t *mThreadSchedule(void)
 
     /* FIXME: current supports only one thread and I think that there should be a activated thread list to reduce time usage */
     for(int8_t threadIndex = 0; threadIndex < MOC_MAX_THREAD_PRIO; threadIndex++){
-        if(!MOC_GET_THREAD_CPU0(threadIndex))
+        if(MOC_GET_THREAD_CPU0(threadIndex) == NULL)
             continue;
-        mThread_t *threadTmp = NULL;
         mThread_t *threadForSwitch = NULL;
-        
-        if(mThreadCurrent == NULL) {
-            threadTmp = MOC_GET_THREAD_CPU0(threadIndex);
-        }
-        else {
-            threadTmp = mThreadCurrent;
-        }
+
         
         sys_dnode_t *newNodeForSwitch = NULL;
         sys_dnode_t *tempNodeSafe = NULL;
-        ThreadDebugLogout("ready to schedule node");
-        SYS_DLIST_FOR_EACH_NODE_SAFE(&threadTmp->threadList, newNodeForSwitch, tempNodeSafe) {
+
+        SYS_DLIST_FOR_EACH_NODE_SAFE(&MOC_GET_THREAD_CPU0(threadIndex)->threadList, newNodeForSwitch, tempNodeSafe) {
+            
             threadForSwitch = CONTAINER_OF(newNodeForSwitch, mThread_t, threadNode);
+
             if(threadForSwitch->status & (mThreadStatus_ABORTING_BIT | mThreadStatus_PRESTART_BIT)){
-                ThreadDebugLogout("find node match");
-                mThreadDebugInfoOutput(threadForSwitch);
-                return mThreadCurrent = threadForSwitch;
+                if(mThreadCurrent){
+                    /* mThreadCurrentDebugInfoOutput(); */
+                    if(mThreadCurrent->status & mThreadStatus_RUNNING_BIT)
+                        mThreadCurrent->status = mThreadStatus_ABORTING_BIT;
+                    else{
+                        continue;
+                    }
+                }
+                
+                threadForSwitch->status = mThreadStatus_RUNNING_BIT;
+                
+                /* mThreadDebugInfoOutput(threadForSwitch); */
+
+                return threadForSwitch;
             }
+
         }   
 
 
     }
-    ThreadDebugLogout("schedule None");
+    /* ThreadDebugLogout("schedule None"); */
 
     return NULL;
 

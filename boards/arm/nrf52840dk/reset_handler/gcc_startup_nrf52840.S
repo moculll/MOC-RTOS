@@ -30,6 +30,7 @@ NOTICE: This file has been modified by Nordic Semiconductor ASA.
 #endif
 #endif
     .extern PendSV_Handler
+    .extern SysTick_Handler
     .section .stack
 #if defined(__STARTUP_CONFIG)
     .align __STARTUP_CONFIG_STACK_ALIGNEMENT
@@ -339,13 +340,6 @@ DebugMon_Handler:
 
 
 
-
-
-    .weak   SysTick_Handler
-    .type   SysTick_Handler, %function
-SysTick_Handler:
-    b       .
-    .size   SysTick_Handler, . - SysTick_Handler
 
 
 /* IRQ Handlers */

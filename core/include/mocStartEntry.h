@@ -3,10 +3,7 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-void PendSV_Handler(void);
-
-
+void mocStartEntry(void);
 
 
 #ifdef __cplusplus

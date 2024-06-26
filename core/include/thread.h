@@ -32,28 +32,28 @@ typedef enum {
 
 
 /* not a real thread */
-#define mThreadStatus_DUMMY_BIT (0 << 1)
+#define mThreadStatus_DUMMY_BIT (1 << 0)
 
 /* thread is stopped */
 #define mThreadStatus_STOPED_BIT  (1 << 1)
 
 /* thread not yet started  */
-#define mThreadStatus_PRESTART_BIT (2 << 1)
+#define mThreadStatus_PRESTART_BIT (1 << 2)
 
 /* thread is running */
-#define mThreadStatus_RUNNING_BIT (3 << 1)
+#define mThreadStatus_RUNNING_BIT (1 << 3)
 
 /* thread is suspended */
-#define mThreadStatus_SUSPENDED_BIT (4 << 1)
+#define mThreadStatus_SUSPENDED_BIT (1 << 4)
 
 /* thread is being aborted */
-#define mThreadStatus_ABORTING_BIT (5 << 1)
+#define mThreadStatus_ABORTING_BIT (1 << 5)
 
 /* thread is waiting on other objects */
-#define mThreadStatus_PENDING_BIT (6 << 1)
+#define mThreadStatus_PENDING_BIT (1 << 6)
 
 /* thread is sleeping */
-#define mThreadStatus_SLEEPING_BIT (7 << 1)
+#define mThreadStatus_SLEEPING_BIT (1 << 7)
 
 
 
@@ -91,10 +91,10 @@ typedef struct {
 
 } mKernel_t;
 
-static mKernel_t mKernel;
+extern volatile mKernel_t mKernel;
 
 /* FIXME: current system supports only one cpu, current thread needs to be multiple */
-static mThread_t *mThreadCurrent;
+extern volatile mThread_t *mThreadCurrent;
 
 /* mThread_t *mGetCurrentThread(void)
 {
@@ -123,6 +123,7 @@ mThreadErrorType_t mThreadCreate(char *stackStart, int stackSize, int8_t priorit
 
 mThread_t *mThreadSchedule(void);
 void mThread_debug(void);
+void mThreadCurrentDebugInfoOutput(void);
 #ifdef __cplusplus
 }
 #endif

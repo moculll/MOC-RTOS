@@ -11,7 +11,7 @@ VENDOR_LIB := $(MOC_ROOT)/vendor/nordic/nrfx
 CFLAGS := -mcpu=cortex-m4 -mthumb -mabi=aapcs -mfloat-abi=hard -DFLOAT_ABI_HARD -mfpu=fpv4-sp-d16
 CFLAGS += -lc -lnosys -lm -nostartfiles
 
-CFLAGS += -DNRF52840_XXAA -DCONFIG_GPIO_AS_PINRESET -DCONFIG_NFCT_PINS_AS_GPIOS -D__START=main -D__Vectors=__isr_vector -D__STARTUP_CLEAR_BSS
+CFLAGS += -DNRF52840_XXAA -DCONFIG_GPIO_AS_PINRESET -DCONFIG_NFCT_PINS_AS_GPIOS -D__START=mocStartEntry -D__Vectors=__isr_vector -D__STARTUP_CLEAR_BSS
 
 
 

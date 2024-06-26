@@ -9,9 +9,11 @@
 #include "shellMgr.h"
 #include <nrfx_systick.h>
 #include "thread.h"
+#include "mocSystick.h"
+
 #define __SYSTEM_CLOCK_64M      (64000000UL)
 
-
+#define CORTEXM_SCB_CPACR_FPU_ACCESS_FULL         (0x00f00000)
 #if defined ( __CC_ARM )
     uint32_t SystemCoreClock __attribute__((used)) = __SYSTEM_CLOCK_64M;
 #elif defined ( __ICCARM__ )
@@ -108,7 +110,14 @@ CORTEXM_STATIC_INLINE void cortexm_init_misc(void)
     SCB->CCR |= SCB_CCR_STKALIGN_Msk;
 #endif
 }
+static inline void cortexm_init_fpu(void)
+{
+    /* initialize the FPU on Cortex-M4F CPUs */
 
+    /* give full access to the FPU */
+    SCB->CPACR |= (uint32_t)CORTEXM_SCB_CPACR_FPU_ACCESS_FULL;
+
+}
 void cortexm_init(void)
 {
 
@@ -117,6 +126,7 @@ void cortexm_init(void)
 
     cortexm_init_isr_priorities();
     cortexm_init_misc();
+    /* cortexm_init_fpu(); */
 }
 
 static void systickInit()
@@ -359,7 +369,8 @@ void SystemInit(void)
     #endif
 
     SystemCoreClockUpdate();
-    nrfx_systick_init();
+    mocSystickInit();
+    /* nrfx_systick_init(); */
     /* FIXME: the system init function shouldn't be inited seperatly there */
     shellMgr->init();
     nrfx_systick_delay_ms(200);

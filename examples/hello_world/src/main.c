@@ -5,14 +5,20 @@
 #include "shellMgr.h"
 #include "thread.h"
 #include <nrfx_systick.h>
-char stackStorge[512];
-
+static uint8_t stackStorge[1024];
+char logbuffer1[1000];
+#define MainDebugLogout(format, ...) \
+                do { \
+                    snprintf(logbuffer1, 1000, "[%s]"format"\r\n", __func__, ##__VA_ARGS__); \
+                    shellMgr->outputString(logbuffer1); \
+                } while(0);
 static void testThreadCallback(void *arg)
 {
-    
+    int a = 0;
     while(1){
         
-        shellMgr->outputString("current is in thread!\r\n");
+        MainDebugLogout("in thread1 %ld", nrf_systick_val_get());
+
         nrfx_systick_delay_ms(1000);
     }
         
@@ -22,17 +28,25 @@ static void testThreadCallback(void *arg)
 /* FIXME: we haven't put the main function into thread, so it can't run with other threads at the same time */
 void main()
 {
-
+    
     static char buffer;
     nrfx_uarte_t shitinstance = NRFX_UARTE_INSTANCE(0);
+
+    shellMgr->outputString("created main\r\n");
+    nrfx_systick_delay_ms(50);
 
     memset((void *)&stackStorge, 0, sizeof(stackStorge));
 
 
-    mThreadCreate(stackStorge, sizeof(stackStorge), 1, testThreadCallback, NULL);
-
+    mThreadCreate(stackStorge, sizeof(stackStorge), 2, testThreadCallback, NULL);
+    
+    /* shellMgr->outputString("created testThreadCallback\r\n"); */
+    /* nrfx_systick_delay_ms(50);
+    uint32_t b = 0; */
     while(1){
-        nrfx_uarte_rx(&shitinstance, &buffer, 1);
+
+        if(NRFX_SUCCESS == nrfx_uarte_rx(&shitinstance, &buffer, 1))
+            shellMgr->outputString(&buffer);
 
     }
 
