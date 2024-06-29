@@ -1,4 +1,4 @@
-#include "shellMgr.h"
+#include <shellMgr/shellMgr.h>
 
 
 static void init();

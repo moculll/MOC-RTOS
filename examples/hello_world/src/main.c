@@ -2,8 +2,8 @@
 #include <nrfx_uarte.h>
 #include <stdlib.h>
 #include <string.h>
-#include "shellMgr.h"
-#include "thread.h"
+#include <shellMgr/shellMgr.h>
+#include <core/thread.h>
 #include <nrfx_systick.h>
 static uint8_t stackStorge[1024];
 char logbuffer1[1000];
@@ -25,7 +25,6 @@ static void testThreadCallback(void *arg)
 
 }
 
-/* FIXME: we haven't put the main function into thread, so it can't run with other threads at the same time */
 void main()
 {
     
@@ -39,10 +38,7 @@ void main()
 
 
     mThreadCreate(stackStorge, sizeof(stackStorge), 2, testThreadCallback, NULL);
-    
-    /* shellMgr->outputString("created testThreadCallback\r\n"); */
-    /* nrfx_systick_delay_ms(50);
-    uint32_t b = 0; */
+
     while(1){
 
         if(NRFX_SUCCESS == nrfx_uarte_rx(&shitinstance, &buffer, 1))

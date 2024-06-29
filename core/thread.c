@@ -1,9 +1,9 @@
 #include <stdalign.h>
 #include <stdio.h>
 
-#include "irqImpl.h"
-#include "thread.h"
-#include "shellMgr.h"
+#include <osImpl/irqImpl.h>
+#include <core/thread.h>
+#include <shellMgr/shellMgr.h>
 #include <nrfx_systick.h>
 
 char logbuffer[500];

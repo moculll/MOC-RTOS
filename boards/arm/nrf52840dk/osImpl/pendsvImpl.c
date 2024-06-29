@@ -1,5 +1,5 @@
 
-#include "thread.h"
+#include <core/thread.h>
 mThread_t *mGetCurrentThread(void);
 
 void __attribute__((naked)) __attribute__((used)) PendSV_Handler(void) {

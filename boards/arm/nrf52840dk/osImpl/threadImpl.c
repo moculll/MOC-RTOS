@@ -1,4 +1,4 @@
-#include "thread.h"
+#include <core/thread.h>
 
 /* the unique val to mark the start of a stack */
 #define STACK_MARKER (0x15292061)

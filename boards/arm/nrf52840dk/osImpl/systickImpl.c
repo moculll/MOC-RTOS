@@ -1,7 +1,7 @@
 
-#include "irqImpl.h"
-#include "systickImpl.h"
-#include "nrf_systick.h"
+#include <osImpl/irqImpl.h>
+#include <osImpl/systickImpl.h>
+#include <nrf_systick.h>
 void mocSystickInitImpl(uint32_t ms)
 {
 

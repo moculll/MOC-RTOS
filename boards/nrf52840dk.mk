@@ -6,86 +6,83 @@ OBJCOPY := arm-none-eabi-objcopy
 SIZE := arm-none-eabi-size
 
 
-VENDOR_LIB := $(MOC_ROOT)/vendor/nordic/nrfx
+VENDOR_LIB := ./vendor/nordic/nrfx
 
+
+# CPU CFLAGS
 CFLAGS := -mcpu=cortex-m4 -mthumb -mabi=aapcs -mfloat-abi=hard -DFLOAT_ABI_HARD -mfpu=fpv4-sp-d16
 CFLAGS += -lc -lnosys -lm -nostartfiles
 
-CFLAGS += -DNRF52840_XXAA -DCONFIG_GPIO_AS_PINRESET -DCONFIG_NFCT_PINS_AS_GPIOS -D__START=mocStartEntry -D__Vectors=__isr_vector -D__STARTUP_CLEAR_BSS
+# Vendor Chip CFLAGS
+CFLAGS += -DNRF52840_XXAA -DCONFIG_GPIO_AS_PINRESET -DCONFIG_NFCT_PINS_AS_GPIOS -D__STARTUP_CLEAR_BSS
+
+# MOC-KERNEL SYSTEM CFLAGS
+CFLAGS += -D__START=mocStartEntry -D__Vectors=__isr_vector
 
 
-
-
+# nrfx lib
 SRCS := $(wildcard $(VENDOR_LIB)/drivers/src/*.c)
 SRCS += $(wildcard $(VENDOR_LIB)/drivers/soc/*.c)
 SRCS += $(wildcard $(VENDOR_LIB)/drivers/src/prs/*.c)
 SRCS += $(wildcard $(BOARD_DIR)/reset_handler/*.c)
-
-# mocos shell namager src
-SRCS += $(wildcard $(MOC_ROOT)/lib/shellMgr/*.c)
-
-# mocos system core src
-SRCS += $(wildcard $(MOC_ROOT)/core/*.c)
-
-# nrf52840dk system implementation src
-SRCS += $(wildcard $(BOARD_DIR)/osImpl/*.c)
-
-# example src
-SRCS += $(MOC_ROOT)/examples/hello_world/src/main.c
-
-SRCS_ASM := $(wildcard $(MOC_ROOT)/boards/arm/nrf52840dk/reset_handler/*.S)
-
-
-# FIXME: this is not the correct way to include files in nrfx
 CFLAGS += -I$(VENDOR_LIB) -I$(VENDOR_LIB)/drivers -I$(VENDOR_LIB)/drivers/include 
 CFLAGS += -I$(VENDOR_LIB)/drivers/src -I$(VENDOR_LIB)/drivers/src/prs -I$(VENDOR_LIB)/hal -I$(VENDOR_LIB)/soc
-CFLAGS += -I$(BOARD_DIR) -I$(BOARD_DIR)/vendor -I$(BOARD_DIR)/reset_handler
+CFLAGS += -I$(BOARD_DIR)/vendor
 
-# CMSIS library include
-CFLAGS += -I$(MOC_ROOT)/lib/cmsis/Core/Include
 
-# mocos system core include
-CFLAGS += -I$(MOC_ROOT)/core/include
+# CMSIS library include, better include this library directly, other libs wouldn't modify
+CFLAGS += -I./lib/cmsis/Core/Include
 
-# mocos shell manager include
-CFLAGS += -I$(MOC_ROOT)/lib/shellMgr 
+# mocos System lib include(dlist/cmsis/shellMgr)
+CFLAGS += -I./lib
 
-# nrf52840dk system implementation include
-CFLAGS += -I$(BOARD_DIR)/osImpl
+# mocos shell namager src
+SRCS += $(wildcard ./lib/shellMgr/*.c)
 
-# zephyr dlist
-CFLAGS += -I$(MOC_ROOT)/lib/dlist
+# mocos system core
+SRCS += $(wildcard ./core/*.c)
+CFLAGS += -I./core
 
-# example include
-CFLAGS += -I$(MOC_ROOT)/examples/hello_world/src
+# mocos system implementation
+SRCS += $(wildcard $(BOARD_DIR)/osImpl/*.c)
+CFLAGS += -I$(BOARD_DIR)
 
+
+# mocos system board memory map implementation
 LDSCRIPT := $(BOARD_DIR)/ld/nrf_common.ld
-
 LDFLAGS := -T $(LDSCRIPT) -Wl,-Map,$(BOARD).map --specs=nano.specs -Wl,--gc-sections
 
+# example src
+SRCS += ./examples/hello_world/src/main.c
+
+SRCS_ASM := $(wildcard ./boards/arm/nrf52840dk/reset_handler/*.S)
+
+
+OBJS := $(patsubst %.c, $(BUILD_DIR)/%.o, $(SRCS))
+OBJS += $(patsubst %.S, $(BUILD_DIR)/%.o, $(SRCS_ASM))
+
+
+all: $(BUILD_DIR)/$(OUT_DIR)/$(BOARD).elf
 
 
 
-OBJS := $(SRCS:.c=.o)
-OBJS += $(SRCS_ASM:.S=.o)
-
-all: $(BOARD).elf
-
-
-
-%.o: %.c
+$(BUILD_DIR)/%.o: %.c
+	@mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) -c -o $@ $<
 
-%.o: %.S
+$(BUILD_DIR)/%.o: %.S
+	@mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) -c -o $@ $<
 
-$(BOARD).elf: $(OBJS)
+$(BUILD_DIR)/$(OUT_DIR)/$(BOARD).elf: $(OBJS)
+	@mkdir -p $(BUILD_DIR)/$(OUT_DIR)
 	$(LD) $(CFLAGS) $(LDFLAGS) $(OBJS) -o $@
-	$(OBJCOPY) -O ihex $(BOARD).elf $(BOARD).hex
-	$(OBJCOPY) -O binary $(BOARD).elf $(BOARD).bin
-	$(SIZE) $(BOARD).elf
+	$(OBJCOPY) -O ihex $(BUILD_DIR)/$(OUT_DIR)/$(BOARD).elf $(BUILD_DIR)/$(OUT_DIR)/$(BOARD).hex
+	$(OBJCOPY) -O binary $(BUILD_DIR)/$(OUT_DIR)/$(BOARD).elf $(BUILD_DIR)/$(OUT_DIR)/$(BOARD).bin
+	$(SIZE) $(BUILD_DIR)/$(OUT_DIR)/$(BOARD).elf
 
 clean:
-	rm -f $(OBJS) $(BOARD).elf $(BOARD).hex $(BOARD).bin $(BOARD).map
+	rm -rf ./build
+
 
 .PHONY: all clean

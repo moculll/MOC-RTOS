@@ -42,14 +42,14 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef NRF_ERRATAS_H
 #define NRF_ERRATAS_H
 
-#include "nrf.h"
+#include <nrf.h>
 
 /* Check MDK version to make sure we have the required macros */
 NRF_MDK_VERSION_ASSERT_AT_LEAST(8,34,0);
 
 /*lint ++flb "Enter library region */
 
-#include "nrf52_erratas.h"
+#include <vendor/nrf52_erratas.h>
 
 
 /*lint --flb "Leave library region" */

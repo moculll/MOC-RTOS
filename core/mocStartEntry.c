@@ -1,10 +1,10 @@
-#include "mocStartEntry.h"
+#include <core/mocStartEntry.h>
 #include <stdio.h>
 #include <nrfx_uarte.h>
 #include <stdlib.h>
 #include <string.h>
-#include "shellMgr.h"
-#include "thread.h"
+#include <shellMgr/shellMgr.h>
+#include <core/thread.h>
 #include <nrfx_systick.h>
 
 extern void main();

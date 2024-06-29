@@ -1,8 +1,8 @@
 #pragma once
 
 #include <stdint.h>
-#include "dlist.h"
-#include "threadImpl.h"
+#include <dlist/dlist.h>
+#include <osImpl/threadImpl.h>
 
 #ifdef __cplusplus
 extern "C" {

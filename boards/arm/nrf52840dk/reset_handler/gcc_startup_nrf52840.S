@@ -24,7 +24,7 @@ NOTICE: This file has been modified by Nordic Semiconductor ASA.
     .arch armv7e-m
 
 #ifdef __STARTUP_CONFIG
-#include "startup_config.h"
+#include <reset_handler/startup_config.h>
 #ifndef __STARTUP_CONFIG_STACK_ALIGNEMENT
 #define __STARTUP_CONFIG_STACK_ALIGNEMENT 3
 #endif

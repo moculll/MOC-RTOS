@@ -28,7 +28,7 @@ NOTICE: This file has been modified by Nordic Semiconductor ASA.
 #include "nrf.h"
 #include "nrf_peripherals.h"
 #include "nrf_erratas.h"
-#include "system_nrf52.h"
+#include <reset_handler/system_nrf52.h>
 #include "system_nrf52_approtect.h"
 
 #define __SYSTEM_CLOCK_64M      (64000000UL)

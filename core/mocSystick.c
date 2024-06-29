@@ -1,10 +1,8 @@
-#include "thread.h"
-#include "irqImpl.h"
-#include "systickImpl.h"
-#include "shellMgr.h"
+#include <core/thread.h>
+#include <osImpl/irqImpl.h>
+#include <osImpl/systickImpl.h>
+#include <shellMgr/shellMgr.h>
 
-
-uint32_t tickCount = 0;
 void SysTick_Handler(void)
 {
 

@@ -1,4 +1,4 @@
-#include "shellMgr.h"
+#include <shellMgr/shellMgr.h>
 #include <nrfx_uarte.h>
 #include <stdio.h>
 #include <stdlib.h>

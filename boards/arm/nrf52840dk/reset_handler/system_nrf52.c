@@ -4,12 +4,12 @@
 #include "nrf.h"
 #include "nrf_peripherals.h"
 #include "nrf_erratas.h"
-#include "system_nrf52.h"
-#include "system_nrf52_approtect.h"
-#include "shellMgr.h"
+#include <reset_handler/system_nrf52.h>
+#include <vendor/system_nrf52_approtect.h>
+#include <shellMgr/shellMgr.h>
 #include <nrfx_systick.h>
-#include "thread.h"
-#include "mocSystick.h"
+#include <core/thread.h>
+#include <core/mocSystick.h>
 
 #define __SYSTEM_CLOCK_64M      (64000000UL)
 
