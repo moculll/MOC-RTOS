@@ -96,6 +96,8 @@ extern volatile mKernel_t mKernel;
 /* FIXME: current system supports only one cpu, current thread needs to be multiple */
 extern volatile mThread_t *mThreadCurrent;
 
+
+
 /* mThread_t *mGetCurrentThread(void)
 {
     return (mThread_t *)mThreadCurrent;

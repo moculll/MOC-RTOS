@@ -1,6 +1,5 @@
 
 #include <core/thread.h>
-mThread_t *mGetCurrentThread(void);
 
 void __attribute__((naked)) __attribute__((used)) PendSV_Handler(void) {
     __asm__ volatile (

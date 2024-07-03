@@ -39,9 +39,11 @@ CFLAGS += -I./lib
 # mocos shell namager src
 SRCS += $(wildcard ./lib/shellMgr/*.c)
 
-# mocos system core
+# mocos system core src
 SRCS += $(wildcard ./core/*.c)
-CFLAGS += -I./core
+
+# mocos system include
+CFLAGS += -I./include
 
 # mocos system implementation
 SRCS += $(wildcard $(BOARD_DIR)/osImpl/*.c)
