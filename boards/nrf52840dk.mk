@@ -50,7 +50,7 @@ CFLAGS += -I$(BOARD_DIR)
 
 # mocos system board memory map implementation
 LDSCRIPT := $(BOARD_DIR)/ld/nrf_common.ld
-LDFLAGS := -T $(LDSCRIPT) -Wl,-Map,$(BOARD).map --specs=nano.specs -Wl,--gc-sections
+LDFLAGS := -T $(LDSCRIPT) -Wl,-Map,$(BUILD_DIR)/$(OUT_DIR)/$(BOARD).map --specs=nano.specs -Wl,--gc-sections
 
 # example src
 SRCS += ./examples/hello_world/src/main.c
