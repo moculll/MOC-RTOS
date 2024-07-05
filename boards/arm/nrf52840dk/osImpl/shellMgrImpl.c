@@ -3,10 +3,21 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdarg.h>
+
+#define SHELLMGR_ASSERT(condition, format) \
+            do { \
+                if(!(condition)){ \
+                    int assertLen = sprintf(shell_buffer, "[Warning][%s](shellMgrImpl.c line:%d): %s\r\n", __func__, __LINE__, format); \
+                    nrfx_uarte_tx(&instance, shell_buffer, assertLen); \
+                } \
+            } while(0)
 
 /* FIXME: these defines are used temporarily, we need to move them to global space */
 #define SHELLMGRUARTNUM 0
 #define SHELLBUFFERLENGTH 1024
+
+/* current static define is because nrfx_uarte buffer has to be in ram */
 static uint8_t shell_buffer[SHELLBUFFERLENGTH];
 
 static nrfx_uarte_t instance = NRFX_UARTE_INSTANCE(SHELLMGRUARTNUM);
@@ -24,23 +35,18 @@ static void event_handler(nrfx_uarte_event_t const *p_event, void *p_context)
 
 }
 
-static void outputString(char *string)
+static void outputString(const char *string, ...)
 {
-    size_t length = strlen(string);
-    if(length < SHELLBUFFERLENGTH) {
-        memcpy(shell_buffer, string, length);
-        nrfx_err_t err = nrfx_uarte_tx(&instance, shell_buffer, length);
-        return;
-    }
-    size_t left = length % SHELLBUFFERLENGTH + 1;
-    for(int i = 0; i < length / SHELLBUFFERLENGTH; i++) {
-        memcpy(shell_buffer, string, SHELLBUFFERLENGTH);
-        nrfx_err_t err = nrfx_uarte_tx(&instance, shell_buffer, SHELLBUFFERLENGTH);
-        string += SHELLBUFFERLENGTH;
-    }
-    memcpy(shell_buffer, string, left);
-    nrfx_err_t err = nrfx_uarte_tx(&instance, shell_buffer, left);
-    return;
+    /* FIXME: this function needs mutex and nrfx_uarte_tx needs semaphore working with event_handler ￪ */
+    va_list args;
+    size_t length;
+    va_start(args, string);
+    length = vsprintf(shell_buffer, string, args);
+    va_end(args);
+    nrfx_err_t err = nrfx_uarte_tx(&instance, shell_buffer, length);
+    
+    SHELLMGR_ASSERT(length <= SHELLBUFFERLENGTH, "SHELLBUFFERLENGTH is too short, lost some string outputs!");
+
 }
 
 

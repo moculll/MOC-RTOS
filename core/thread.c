@@ -6,9 +6,6 @@
 #include <shellMgr/shellMgr.h>
 #include <nrfx_systick.h>
 
-char logbuffer[500];
-
-
 #define CONFIG_THREAD_DEBUG_ASSERT 0
 #if CONFIG_THREAD_DEBUG_ASSERT
 #define ThreadDebugAssert() \
@@ -25,10 +22,8 @@ char logbuffer[500];
 /* FIXME: the debug function is not complete because we haven't impl the shellMgr done */
 #define ThreadDebugLogout(format, ...) \
                 do { \
-                    nrfx_systick_delay_ms(100); \
-                    snprintf(logbuffer, 500, "[%s]"format"\r\n", __func__, ##__VA_ARGS__); \
-                    shellMgr->outputString(logbuffer); \
                     nrfx_systick_delay_ms(10); \
+                    shellMgr->outputString(format, ##__VA_ARGS__); \
                 } while(0);
 #else 
 

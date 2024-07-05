@@ -6,18 +6,13 @@
 #include <core/thread.h>
 #include <nrfx_systick.h>
 static uint8_t stackStorge[1024];
-char logbuffer1[1000];
-#define MainDebugLogout(format, ...) \
-                do { \
-                    snprintf(logbuffer1, 1000, "[%s]"format"\r\n", __func__, ##__VA_ARGS__); \
-                    shellMgr->outputString(logbuffer1); \
-                } while(0);
+
 static void testThreadCallback(void *arg)
 {
-    int a = 0;
+
     while(1){
         
-        MainDebugLogout("in thread1 %ld", nrf_systick_val_get());
+        shellMgr->outputString("[thread1]clock: %ld\r\n", nrf_systick_val_get());
 
         nrfx_systick_delay_ms(1000);
     }

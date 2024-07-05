@@ -35,7 +35,7 @@ BOARDS=[nrf52840dk, esp32h2]
 ## 4. Flash the executable file into your Board and Enjoy!
 
 ```
-nrfjprog -f nrf52 --sectorerase --program build/out/nrf52840dk/nrf52840dk.bin --reset
+nrfjprog -f nrf52 --sectorerase --program build/out/nrf52840dk.bin --reset
 ```
 
 

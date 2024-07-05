@@ -8,7 +8,7 @@ extern "C" {
 typedef struct {
     void (*init)(void);
     /* FIXME: current sshellMgr doesn't support format function */
-    void (*outputString)(char *string);
+    void (*outputString)(const char *string, ...);
 } shellMgr_t;
 
 extern shellMgr_t *shellMgr;
