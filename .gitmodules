@@ -1,0 +1,3 @@
+[submodule "lib/mMemoryMgr"]
+	path = lib/mMemoryMgr
+	url = ../../moculll/mMemoryMgr.git

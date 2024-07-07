@@ -42,15 +42,6 @@ volatile mKernel_t mKernel;
 /* FIXME: current system supports only one cpu, current thread needs to be multiple */
 volatile mThread_t *mThreadCurrent;
 
-typedef struct {
-    union{
-        sys_dlist_t *list;
-        sys_dnode_t *node;
-    }
-    mThreadScheduling_t *next;
-} mThreadScheduling_t;
-
-volatile mThreadScheduling_t *mThreadScheduling;
 
 void mThreadDebugInfoOutput(mThread_t *thread)
 {
@@ -74,37 +65,14 @@ mThreadErrorType_t mThreadInit(void)
         MOC_GET_THREAD_CPU0(threadIndex) = NULL;
     
     mThreadCurrent = NULL;
-    mThreadScheduling = NULL;
+
     
     return err;
 }
 
 
 
-static void mThreadArrange(void)
-{
-    for(int8_t threadIndex = 0; threadIndex < MOC_MAX_THREAD_PRIO; threadIndex++){
-        if(MOC_GET_THREAD_CPU0(threadIndex) == NULL)
-            continue;
-        mThread_t *threadForArrange = NULL;
 
-        sys_dnode_t *newNodeForArrange = NULL;
-        sys_dnode_t *tempNodeSafe = NULL;
-
-        SYS_DLIST_FOR_EACH_NODE_SAFE(&MOC_GET_THREAD_CPU0(threadIndex)->threadList, newNodeForArrange, tempNodeSafe) {
-            
-            threadForArrange = CONTAINER_OF(newNodeForArrange, mThread_t, threadNode);
-
-            if(threadForArrange->status & (mThreadStatus_ABORTING_BIT | mThreadStatus_PRESTART_BIT | mThreadStatus_RUNNING_BIT)){
-               mThreadScheduling->
-            }
-
-        }   
-
-
-    }
-
-}
 
 
 /**

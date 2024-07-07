@@ -20,10 +20,12 @@ source "${BOARD_DIR}/deps/env.sh"
 
 make clean
 
+
+
 make "BOARD=${BOARD}" "-j${CPU_MAX}"
 
 
 
-mkdir "${OUTPUT_DIR}"
-mv "${MOCROOT_DIR}/${BOARD}.bin" "${MOCROOT_DIR}/${BOARD}.elf" "${MOCROOT_DIR}/${BOARD}.hex" "${MOCROOT_DIR}/${BOARD}.map" "${OUTPUT_DIR}"
+
+
 
