@@ -37,6 +37,7 @@ volatile mKernel_t mKernel;
 /* FIXME: current system supports only one cpu, current thread needs to be multiple */
 volatile mThread_t *mThreadCurrent;
 
+
 void mThreadDebugInfoOutput(mThread_t *thread)
 {
 
@@ -59,9 +60,15 @@ mThreadErrorType_t mThreadInit(void)
         MOC_GET_THREAD_CPU0(threadIndex) = NULL;
     
     mThreadCurrent = NULL;
+
     
     return err;
 }
+
+
+
+
+
 
 /**
  * @brief we don't manage the mThreadCurrent there, this function is just for thread create & dlist management
