@@ -5,21 +5,33 @@
 #include <shellMgr/shellMgr.h>
 #include <core/thread.h>
 #include <nrfx_systick.h>
+#include <mMemoryMgr/mMemoryMgr.h>
 static uint8_t stackStorge[1024];
 
 static void testThreadCallback(void *arg)
 {
+    mMemoryMgrInit(40, 1, 0);
 
+    
     while(1){
-        
-        shellMgr->outputString("[thread1]clock: %ld\r\n", nrf_systick_val_get());
+        char *space = mMemoryMalloc(40);
+        strcpy(space, "fuckyou\r\n");
 
-        nrfx_systick_delay_ms(1000);
+        shellMgr->outputString(space);
+        mMemoryFree(space);
+        /* shellMgr->outputString("[thread1]clock: %ld\r\n", nrf_systick_val_get()); */
+
+        nrfx_systick_delay_ms(50);
     }
         
 
 }
-
+__attribute__((constructor(101))) static void test_func()
+{
+    nrfx_systick_delay_ms(1000);
+    shellMgr->outputString("[ohly shittttttttttt\r\n");
+    nrfx_systick_delay_ms(1000);
+}
 void main()
 {
     
@@ -30,6 +42,7 @@ void main()
     nrfx_systick_delay_ms(50);
 
     memset((void *)&stackStorge, 0, sizeof(stackStorge));
+
 
 
     mThreadCreate(stackStorge, sizeof(stackStorge), 2, testThreadCallback, NULL);
