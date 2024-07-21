@@ -31,10 +31,11 @@
 #include <stdio.h>
 #include <sys/stat.h>
 #include <sys/times.h>
+#include <sys/types.h>
 #include <sys/unistd.h>
 #include <unistd.h>
-
-
+#include <shellMgr/shellMgr.h>
+#include <osImpl/irqImpl.h>
 
 
 #ifndef NUM_HEAPS
@@ -42,40 +43,16 @@
 #endif
 
 
+extern char __HeapBase;
+extern char __HeapLimit;
 
-/**
- * @brief manage the heap
- */
-extern char _sheap;                 /* start of the heap */
-extern char _eheap;                 /* end of the heap */
-#define __eheap &_eheap
-
-
-/**
- * @brief Additional heap sections that may be defined in the linkerscript.
- *
- *        The compiler should not generate references to those symbols if
- *        they are not used, so only provide them if additional memory sections
- *        that can be used as heap are available.
- * @{
- */
-extern char _sheap1;
-extern char _eheap1;
-
-extern char _sheap2;
-extern char _eheap2;
-
-extern char _sheap3;
-extern char _eheap3;
-/* @} */
-
-struct heap {
+typedef struct  {
     char* start;
     char* end;
-};
+} mHeap_t;
 
 static char *heap_top[NUM_HEAPS] = {
-    &_sheap,
+    &__HeapBase,
 #if NUM_HEAPS > 1
     &_sheap1,
 #endif
@@ -90,10 +67,10 @@ static char *heap_top[NUM_HEAPS] = {
 #endif
 };
 
-static const struct heap heaps[NUM_HEAPS] = {
+static const mHeap_t heaps[NUM_HEAPS] = {
     {
-        .start = &_sheap,
-        .end   = __eheap
+        .start = &__HeapBase,
+        .end   = &__HeapLimit
     },
 #if NUM_HEAPS > 1
     {
@@ -170,7 +147,7 @@ __attribute__((used)) void _exit(int n)
 void *_sbrk_r(struct _reent *r, ptrdiff_t incr)
 {
     void *res = (void*)UINTPTR_MAX;
-    unsigned int state = irq_disable();
+    unsigned int state = mDisableIrqImpl();
 
     for (unsigned i = 0; i < NUM_HEAPS; ++i) {
         if ((heap_top[i] + incr > heaps[i].end) ||
@@ -187,7 +164,7 @@ void *_sbrk_r(struct _reent *r, ptrdiff_t incr)
         r->_errno = ENOMEM;
     }
 
-    irq_restore(state);
+    mRestoreIrqImpl(state);
     return res;
 }
 
@@ -221,7 +198,7 @@ __attribute__((weak)) void heap_stats(void)
  */
 pid_t _getpid(void)
 {
-    return thread_getpid();
+    return 0;
 }
 
 /**
@@ -232,7 +209,7 @@ pid_t _getpid(void)
 pid_t _getpid_r(struct _reent *ptr)
 {
     (void) ptr;
-    return thread_getpid();
+    return 0;
 }
 
 /**
@@ -268,7 +245,7 @@ _ssize_t _read_r(struct _reent *r, int fd, void *buffer, size_t count)
 {
     (void)r;
     (void)fd;
-    return stdio_read(buffer, count);
+    return shellMgr->getString(buffer, count);
 }
 
 /*
@@ -281,7 +258,7 @@ _ssize_t _write_r(struct _reent *r, int fd, const void *data, size_t count)
 {
     (void) r;
     (void) fd;
-    return stdio_write(data, count);
+    return shellMgr->outputStringSize(data, count);
 }
 
 /* Stubs to avoid linking errors, these functions do not have any effect */

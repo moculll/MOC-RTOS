@@ -49,6 +49,26 @@ static void outputString(const char *string, ...)
 
 }
 
+static size_t outputStringSize(const char *string, size_t size)
+{
+    memcpy(shell_buffer, string, size);
+    nrfx_err_t err = nrfx_uarte_tx(&instance, shell_buffer, size);
+    if(err == NRFX_SUCCESS)
+        return size;
+    return 0;
+}
+
+
+static size_t getString(char *string, size_t size)
+{
+    nrfx_err_t err = nrfx_uarte_rx(&instance, string, size);
+    if(err == NRFX_SUCCESS)
+        return size;
+    return 0;
+
+}
+
+
 
 void shellMgrImplInit(void)
 {
@@ -66,6 +86,8 @@ void shellMgrImplInit(void)
     };
     nrfx_uarte_init(&instance, &uart_cfg, event_handler);
     shellMgr->outputString = outputString;
+    shellMgr->getString = getString;
+    shellMgr->outputStringSize = outputStringSize;
     shellMgr->outputString("\r\nWelcome to MOCOS!\r\n");
 }
 

@@ -131,7 +131,7 @@ mThreadErrorType_t mThreadCreate(char *stackStart, int stackSize, int8_t priorit
 
 restore_irq:
 
-    mRestoreIrq(state);
+    mRestoreIrqImpl(state);
 
     mThreadYieldHigher();
 

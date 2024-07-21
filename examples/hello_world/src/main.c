@@ -14,32 +14,27 @@ static void testThreadCallback(void *arg)
 
     
     while(1){
-        char *space = mMemoryMalloc(40);
+        /* char *space = mMemoryMalloc(40);
         strcpy(space, "fuckyou\r\n");
 
         shellMgr->outputString(space);
-        mMemoryFree(space);
+        mMemoryFree(space); */
+        printf("[thread1]clock:: %d\r\n", nrf_systick_val_get());
         /* shellMgr->outputString("[thread1]clock: %ld\r\n", nrf_systick_val_get()); */
 
-        nrfx_systick_delay_ms(50);
+        nrfx_systick_delay_ms(500);
     }
         
 
 }
-__attribute__((constructor(101))) static void test_func()
-{
-    nrfx_systick_delay_ms(1000);
-    shellMgr->outputString("[ohly shittttttttttt\r\n");
-    nrfx_systick_delay_ms(1000);
-}
+
 void main()
 {
     
     static char buffer;
-    nrfx_uarte_t shitinstance = NRFX_UARTE_INSTANCE(0);
+    nrfx_uarte_t instance = NRFX_UARTE_INSTANCE(0);
 
-    shellMgr->outputString("created main\r\n");
-    nrfx_systick_delay_ms(50);
+    printf("created main\r\n");
 
     memset((void *)&stackStorge, 0, sizeof(stackStorge));
 
@@ -49,8 +44,8 @@ void main()
 
     while(1){
 
-        if(NRFX_SUCCESS == nrfx_uarte_rx(&shitinstance, &buffer, 1))
-            shellMgr->outputString(&buffer);
+        nrfx_uarte_rx(&instance, &buffer, 1);
+        nrfx_systick_delay_ms(50);
 
     }
 

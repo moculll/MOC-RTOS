@@ -46,7 +46,7 @@ SRCS += $(wildcard ./lib/rbtree/*.c)
 SRCS += $(wildcard ./lib/mMemoryMgr/*.c)
 
 # mocos memory manager src
-#SRCS += $(wildcard ./lib/newlib/*.c)
+SRCS += $(wildcard ./lib/newlib/*.c)
 
 # mocos system core src
 SRCS += $(wildcard ./core/*.c)
