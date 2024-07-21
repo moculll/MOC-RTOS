@@ -19,7 +19,7 @@ static void testThreadCallback(void *arg)
 
         shellMgr->outputString(space);
         mMemoryFree(space); */
-        printf("[thread1]clock:: %d\r\n", nrf_systick_val_get());
+        printf("[thread1]clock: %d\r\n", nrf_systick_val_get());
         /* shellMgr->outputString("[thread1]clock: %ld\r\n", nrf_systick_val_get()); */
 
         nrfx_systick_delay_ms(500);

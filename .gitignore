@@ -1,3 +1,4 @@
 *.o
 build/
 **/deps/*/
+**/*build_bak/
