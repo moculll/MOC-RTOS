@@ -36,8 +36,17 @@ CFLAGS += -I./lib/cmsis/Core/Include
 # mocos System lib include(dlist/cmsis/shellMgr)
 CFLAGS += -I./lib
 
-# mocos shell namager src
+# mocos shell manager src
 SRCS += $(wildcard ./lib/shellMgr/*.c)
+
+
+
+# mocos memory manager src
+SRCS += $(wildcard ./lib/rbtree/*.c)
+SRCS += $(wildcard ./lib/mMemoryMgr/*.c)
+
+# mocos memory manager src
+SRCS += $(wildcard ./lib/newlib/*.c)
 
 # mocos system core src
 SRCS += $(wildcard ./core/*.c)

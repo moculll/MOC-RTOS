@@ -24,7 +24,7 @@ unsigned int mEnableIrqImpl(void)
 }
 
 static inline __attribute__((always_inline))
-void mRestoreIrq(unsigned int state)
+void mRestoreIrqImpl(unsigned int state)
 {
     __set_PRIMASK(state);
 }
