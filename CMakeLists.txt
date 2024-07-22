@@ -12,7 +12,7 @@ include_directories(${CMAKE_SOURCE_DIR}/include)
 include_directories(${CMAKE_SOURCE_DIR}/lib)
 
 include(${CMAKE_TOOLCHAIN_FILE})
+
 add_subdirectory(core)
 add_subdirectory(lib)
 add_subdirectory(examples)
-

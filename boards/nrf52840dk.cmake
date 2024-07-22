@@ -38,8 +38,8 @@ file(GLOB_RECURSE SOURCES
     ${CMAKE_SOURCE_DIR}/vendor/nordic/nrfx/soc/*.c
 )
 
-add_library(moc_rt STATIC ${SOURCES})
+add_library(board_static STATIC ${SOURCES})
 
-target_link_libraries(moc_rt core shellMgr)
+target_link_libraries(board_static core shellMgr)
 
 
