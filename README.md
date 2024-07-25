@@ -35,7 +35,7 @@ BOARDS=[nrf52840dk, esp32h2]
 ## 4. Flash the executable file into your Board and Enjoy!
 
 ```
-nrfjprog -f nrf52 --sectorerase --program build/out/MOC-RTOS.bin --reset
+nrfjprog -f nrf52 --sectorerase --program out/nrf52840dk/MOC-RTOS.bin --reset
 ```
 
 

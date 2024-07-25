@@ -1,5 +1,5 @@
 #!/bin/env bash
-sudo apt-get install ninja-build
+sudo apt-get install cmake ninja-build
 git submodule update --init
 
 SCRIPT_DIR=$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")
