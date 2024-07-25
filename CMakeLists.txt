@@ -1,11 +1,18 @@
 cmake_minimum_required(VERSION 3.10)
 project(MOC-RTOS)
 
-set(BOARD nrf52840dk CACHE STRING "board for compiling")
-
-if (BOARD STREQUAL "nrf52840dk")
-    set(CMAKE_TOOLCHAIN_FILE "${CMAKE_SOURCE_DIR}/boards/nrf52840dk.cmake")
+if(DEFINED BOARD)
+    message("[BUILD] BOARD: ${BOARD}")
+else()
+    set(BOARD nrf52840dk CACHE STRING "board for compiling")
+    message("[BUILD] BOARD is not defined, using default BOARD: nrf52840dk")
 endif()
+
+
+
+
+set(CMAKE_TOOLCHAIN_FILE "${CMAKE_SOURCE_DIR}/boards/${BOARD}.cmake")
+
 
 
 include_directories(${CMAKE_SOURCE_DIR}/include)
