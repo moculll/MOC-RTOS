@@ -21,3 +21,9 @@ void mocStartEntry(void)
 
 
 }
+
+__attribute__((weak)) void main()
+{
+    
+
+}
