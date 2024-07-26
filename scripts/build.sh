@@ -14,18 +14,15 @@ BOARD_DIR=$(find "${SCRIPT_DIR}/../boards/" -type d -name "${BOARD}" -print -qui
 OUTPUT_DIR="${MOCROOT_DIR}/out/${BOARD}"
 
 
-CPU_MAX=$(cat /proc/cpuinfo | grep "processor" | wc -l)
 cd "${MOCROOT_DIR}"
-source "${BOARD_DIR}/deps/env.sh"
-
-make clean
 
 
+cmake --build build --target clean_build > /dev/null
+echo "[CLEAN] Moved previous build dir"
 
-make "BOARD=${BOARD}" "-j${CPU_MAX}"
+cmake -S . -G Ninja -B build "-DBOARD=${BOARD}" > /dev/null
 
+cmake --build build
 
-
-
-
-
+mkdir -p "${OUTPUT_DIR}"
+cp "${MOCROOT_DIR}/build/MOC-RTOS.hex" "${MOCROOT_DIR}/build/${BOARD}.map" "${MOCROOT_DIR}/build/MOC-RTOS.bin" "${OUTPUT_DIR}/"

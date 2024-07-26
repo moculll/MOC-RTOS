@@ -1,5 +1,5 @@
 #!/bin/env bash
-
+sudo apt-get install cmake ninja-build
 git submodule update --init
 
 SCRIPT_DIR=$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")
@@ -16,4 +16,3 @@ for BOARD in "${BOARDS[@]}"; do
         echo "${BOARD} support not found, skip..."
     fi
 done
-
