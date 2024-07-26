@@ -1,4 +1,9 @@
 cmake_minimum_required(VERSION 3.10)
+if(WIN32)
+    set(CMAKE_SYSTEM_NAME Generic)
+elseif(UNIX AND NOT APPLE)
+    set(CMAKE_SYSTEM_NAME Linux)
+endif()
 project(MOC-RTOS)
 
 if(DEFINED BOARD)
