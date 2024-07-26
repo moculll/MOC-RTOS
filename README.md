@@ -42,7 +42,7 @@ BOARDS=[nrf52840dk, esp32h2]
 
 ```
 # Windows
-.\scripts\build.sh BOARD=nrf52840dk
+.\scripts\build.bat BOARD=nrf52840dk
 ```
 
 ## 4. Flash the executable file into your Board and Enjoy!
