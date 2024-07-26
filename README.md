@@ -1,5 +1,5 @@
 # MOC-RTOS User Guide
-- Environment: Ubuntu22.04
+- Environment: Ubuntu22.04 Windows10
 ## 1. Clone MOC-RTOS
 ```
 git clone https://github.com/moculll/MOC-RTOS.git
@@ -22,24 +22,47 @@ BOARDS=[nrf52840dk, esp32h2]
 ```
 
 #### 2.2 bootstarp for board dependency
+
 ```
+# Linux
 ./scripts/bootstrap.sh
+```
+
+```
+# Windows
+.\scripts\bootstrap.bat
 ```
 
 ## 3. Compile the project
 
 ```
+# Linux
 ./scripts/build.sh BOARD=nrf52840dk
+```
+
+```
+# Windows
+.\scripts\build.sh BOARD=nrf52840dk
 ```
 
 ## 4. Flash the executable file into your Board and Enjoy!
 
 ```
-nrfjprog -f nrf52 --sectorerase --program out/nrf52840dk/MOC-RTOS.bin --reset
+# Linux
+nrfjprog -f nrf52 --sectorerase --program out/nrf52840dk/MOC-RTOS.hex --reset
 ```
 
 
 
+
+```
+# Windows
+nrfjprog -f nrf52 --sectorerase --program out\nrf52840dk\MOC-RTOS.hex --reset
+```
+```
+Note that currently in Windows we are not able to download segger Jlink driver and
+nrfjprog for you, you need to download them manually to flash the board
+```
 # Contribute
 - #### Commit Fomat
 ```

@@ -15,7 +15,7 @@ OUTPUT_DIR="${MOCROOT_DIR}/out/${BOARD}"
 
 
 cd "${MOCROOT_DIR}"
-
+source "${BOARD_DIR}/deps/env.sh"
 
 cmake --build build --target clean_build > /dev/null
 echo "[CLEAN] Moved previous build dir"
