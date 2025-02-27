@@ -1,1 +1,5 @@
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/hello_world)
+if(${BOARD} STREQUAL "nrf52840dk")
+    add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/hello_world_nrf52840dk)
+elseif(${BOARD} STREQUAL "virt")
+    add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/hello_world_virt)
+endif()

@@ -1,4 +1,4 @@
-#include <core/thread.h>
+#include <core/mocThread.h>
 #include <osImpl/irqImpl.h>
 #include <osImpl/systickImpl.h>
 #include <shellMgr/shellMgr.h>

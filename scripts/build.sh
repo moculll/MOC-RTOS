@@ -15,7 +15,7 @@ OUTPUT_DIR="${MOCROOT_DIR}/out/${BOARD}"
 
 
 cd "${MOCROOT_DIR}"
-source "${BOARD_DIR}/deps/env.sh"
+source "${BOARD_DIR}/../deps/env.sh"
 
 cmake --build build --target clean_build > /dev/null
 echo "[CLEAN] Moved previous build dir"
@@ -25,4 +25,4 @@ cmake -S . -G Ninja -B build "-DBOARD=${BOARD}" > /dev/null
 cmake --build build
 
 mkdir -p "${OUTPUT_DIR}"
-cp "${MOCROOT_DIR}/build/MOC-RTOS.hex" "${MOCROOT_DIR}/build/${BOARD}.map" "${MOCROOT_DIR}/build/MOC-RTOS.bin" "${OUTPUT_DIR}/"
+cp "${MOCROOT_DIR}/build/MOC-RTOS.hex" "${MOCROOT_DIR}/build/MOC-RTOS.lst" "${MOCROOT_DIR}/build/MOC-RTOS.bin" "${MOCROOT_DIR}/build/MOC-RTOS.elf" "${OUTPUT_DIR}/"

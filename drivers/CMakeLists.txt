@@ -1,0 +1,2 @@
+file(GLOB DRIVERS_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/uart/*.c)
+add_library(drivers STATIC ${DRIVERS_SOURCES})

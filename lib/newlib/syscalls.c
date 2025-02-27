@@ -95,7 +95,7 @@ static const mHeap_t heaps[NUM_HEAPS] = {
 /**
  * @brief Initialize NewLib, called by __libc_init_array() from the startup script
  */
-void _init(void)
+__attribute__((weak)) void _init(void)
 {
     /* Definition copied from newlib/libc/stdio/local.h */
     extern void __sinit (struct _reent *);
@@ -119,7 +119,7 @@ void _init(void)
  * @brief Free resources on NewLib de-initialization, not used for RIOT
  */
 /* __attribute__((used)) fixes linker errors when building with LTO, but without nano.specs */
-__attribute__((used)) void _fini(void)
+__attribute__((weak)) void _fini(void)
 {
     /* nothing to do here */
 }

@@ -10,6 +10,8 @@ set(CMAKE_CXX_COMPILER arm-none-eabi-g++)
 set(CMAKE_ASM_COMPILER arm-none-eabi-gcc)
 set(CMAKE_OBJCOPY arm-none-eabi-objcopy)
 set(CMAKE_SIZE arm-none-eabi-size)
+set(CMAKE_OBJDUMP arm-none-eabi-objdump)
+set(CMAKE_LINKER arm-none-eabi-ld)
 
 set(CMAKE_C_FLAGS "-mcpu=cortex-m4 -mthumb -mabi=aapcs -mfloat-abi=hard -mfpu=fpv4-sp-d16")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -lc -lnosys -lm -nostartfiles")

@@ -2,9 +2,9 @@
 #include <stdio.h>
 
 #include <osImpl/irqImpl.h>
-#include <core/thread.h>
+#include <core/mocThread.h>
 #include <shellMgr/shellMgr.h>
-#include <nrfx_systick.h>
+
 
 #define CONFIG_THREAD_DEBUG_ASSERT 0
 #if CONFIG_THREAD_DEBUG_ASSERT
@@ -22,7 +22,6 @@
 /* FIXME: the debug function is not complete because we haven't impl the shellMgr done */
 #define ThreadDebugLogout(format, ...) \
                 do { \
-                    nrfx_systick_delay_ms(10); \
                     shellMgr->outputString(format, ##__VA_ARGS__); \
                 } while(0);
 #else 

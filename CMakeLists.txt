@@ -6,6 +6,9 @@ elseif(UNIX AND NOT APPLE)
 endif()
 project(MOC-RTOS)
 
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
 if(DEFINED BOARD)
     message("[BUILD] BOARD: ${BOARD}")
 else()
@@ -24,6 +27,8 @@ include_directories(${CMAKE_SOURCE_DIR}/include)
 include_directories(${CMAKE_SOURCE_DIR}/lib)
 
 include(${CMAKE_TOOLCHAIN_FILE})
+
+add_subdirectory(drivers)
 
 add_subdirectory(core)
 add_subdirectory(lib)
